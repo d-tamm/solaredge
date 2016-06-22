@@ -65,40 +65,40 @@ invOutFmt = ["%s", "%s", "%s", "%d", "%d", "%f", "%f", "%f", "%f", "%f", "%f", "
 # 3 phase inverter data interpretation
 #
 #   timeStamp = devData[0]
-#   Uptime = devData[1] # uptime (secs) (confirmed)
-#   Interval = devData[2] # time in last interval (secs) (confirmed)
-#   Temp = devData[3] # temperature (C) (confirmed)
-#   Eday = devData[4] # energy produced today (Wh) (probably right)
-#   Eac = devData[5] # energy produced in last interval (Wh) (probably right)
-#   Vac1 = devData[6] # AC volts (confirmed)
-#   Vac2 = devData[7] # AC volts (confirmed)
-#   Vac3 = devData[8] # AC volts (confirmed)
-#   Iac1 = devData[9] # AC current (confirmed)
-#   Iac2 = devData[10] # AC current (confirmed)
-#   Iac3 = devData[11] # AC current (confirmed)
-#   freq1 = devData[12] # frequency (Hz) (confirmed)
-#   freq2 = devData[13] # frequency (Hz) (confirmed)
-#   freq3 = devData[14] # frequency (Hz) (confirmed)
-#   data15 = devData[15] # 0xff7fffff
-#   data16 = devData[16] # 0xff7fffff
-#   Vdc = devData[17] # DC volts (confirmed)
-#   data18 = devData[18] # 0xff7fffff
-#   Etot = devData[19] # total energy produced (Wh) (confirmed)
-#   data20 = devData[20] # ?
+#   Uptime = devData[1] # uptime (secs)
+#   Interval = devData[2] # time in last interval (secs)
+#   Temp = devData[3] # temperature (C)
+#   Eday = devData[4] # energy produced today (Wh)
+#   Eac = devData[5] # energy produced in last interval (Wh)
+#   Vac1 = devData[6] # AC volts
+#   Vac2 = devData[7] # AC volts
+#   Vac3 = devData[8] # AC volts
+#   Iac1 = devData[9] # AC current
+#   Iac2 = devData[10] # AC current
+#   Iac3 = devData[11] # AC current
+#   freq1 = devData[12] # frequency (Hz)
+#   freq2 = devData[13] # frequency (Hz)
+#   freq3 = devData[14] # frequency (Hz)
+#   EdayDC = devData[15] # Same as Eday, but measured at DC side. Obfuscated by SE because it would directly reveal inverter efficiency.
+#   Edc = devData[16] # Same as Eac, but measured at DC side. Obfuscated by SE just like EdayDC.
+#   Vdc = devData[17] # DC volts
+#   Idc = devData[18] # Same as Iac, but at DC side. Obfuscated by SE.
+#   Etot = devData[19] # total energy produced (Wh)
+#   Ircd = devData[20] # What's this?
 #   data21 = devData[21] # 0xff7fffff
 #   data22 = devData[22] # 0.0
 #   data23 = devData[23] # 0.0
-#   Pmax = devData[24] # max power (W) = 5000 (wrong, always shows 1)
-#   data25 = devData[25] # 0.0
-#   data26 = devData[26] # ?
-#   data27 = devData[27] # 0xff7fffff
-#   data28 = devData[28] # 0xff7fffff
-#   Pac = devData[29] # AC power (W) (wrong, always 100 or 0)
-#   data30 = devData[30] # ?
+#   CosPhi1 = devData[24] # 
+#   CosPhi2 = devData[25] #
+#   CosPhi3 = devData[26] # 
+#   mode = devData[27] # Mode (1=OFF, 2=SLEEPING, 3=STARTING, 4=MPPT, 6=SHUTTING_DOWN, 8=STANDBY)
+#   GndFtR = devData[28] # Ground Fault Resistance, a float value
+#   data29 = devData[29] # Is this Power Limit in percent?, always 100 or 0
+#   IoutDC = devData[30] # This is what SolarEdge calls it.
 #   data31 = devData[31] # 0xff7fffff
     
 # format string used to unpack input data
-inv3PhInFmt = "<LLLffffffffffffLLfLffLfffffLLffL"
+inv3PhInFmt = "<LLLffffffffffffLLfLffLLLfffLfffL"
 # length of data that will be unpacked
 inv3PhInFmtLen = (len(inv3PhInFmt)-1)*4
 # mapping of input data to device data items
@@ -107,11 +107,11 @@ inv3PhIdx = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25
 # device data item names
 inv3PhItems = ["Date", "Time", "ID", "Uptime", "Interval", "Temp",
 	"Eday", "Eac", "Vac1", "Vac2", "Vac3", "Iac1",
-   "Iac2", "Iac3", "Freq1", "Freq2", "Freq3", "data15", "data16", "Vdc", "data18",
-   "Etot", "data20", "data21", "data22", "data23", "Pmax", "data25", "data26", "data27", "data28", "Pac", "data30", "data31"]
+   "Iac2", "Iac3", "Freq1", "Freq2", "Freq3", "EdayDC", "Edc", "Vdc", "Idc",
+   "Etot", "Irdc", "data21", "data22", "data23", "CosPhi1", "CosPhi2", "CosPhi3", "mode", "GndFrR", "data29", "IoutDC", "data31"]
 # device data output file format strings
 #inv3PhOutFmt = ["%s", "%s", "%s", "%d", "%d", "%f", "%f", "%f", "%f", "%f", "%f", "%f", "%f", "%f", "%f", "%f", "%f", "%f", "%f", "%f", "%f"]
-inv3PhOutFmt = ["%s", "%s", "%s", "%d", "%d", "%f", "%f", "%f", "%f", "%f", "%f", "%f", "%f", "%f", "%f", "%f", "%f", "%d", "%d", "%f", "%d", "%f", "%f", "%d", "%f", "%f", "%f", "%f", "%f", "%d", "%d", "%f", "%f", "%d"]
+inv3PhOutFmt = ["%s", "%s", "%s", "%d", "%d", "%f", "%f", "%f", "%f", "%f", "%f", "%f", "%f", "%f", "%f", "%f", "%f", "%d", "%d", "%f", "%d", "%f", "%f", "%d", "%d", "%d", "%f", "%f", "%f", "%d", "%f", "%f", "%f", "%d"]
 
 # optimizer data interpretation
 #
